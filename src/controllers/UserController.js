@@ -26,7 +26,23 @@ async function login(req, res, next) {
   }
 }
 
+async function get(req, res, next) {
+  try {
+    const username = req.user.username;
+    const user = await UserService.get(username);
+
+    res.status(200).json({
+      success: true,
+      data: user,
+      errors: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   register,
   login,
+  get,
 };
