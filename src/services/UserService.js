@@ -3,6 +3,7 @@ import {
   GetUserValidation,
   LoginUserValidation,
   RegisterUserValidation,
+  UpdateUserValidation,
 } from '../validation/user.validation.js';
 import { prisma } from '../utils/database.js';
 import { ResponseError } from '../error/ResponseError.js';
@@ -91,8 +92,44 @@ async function get(username) {
   return user;
 }
 
+async function update(request) {
+  const user = validate(UpdateUserValidation, request);
+
+  const totalUser = await prisma.user.count({
+    where: {
+      username: user.username,
+    },
+  });
+
+  if (totalUser != 1) {
+    throw new ResponseError(404, 'User not found');
+  }
+
+  const data = {};
+
+  if (user.email) {
+    data.email = user.email;
+  }
+
+  if (user.password) {
+    data.password = await bcrypt.hash(user.password, 10);
+  }
+
+  return prisma.user.update({
+    where: {
+      username: user.username,
+    },
+    data,
+    select: {
+      username: true,
+      email: true,
+    },
+  });
+}
+
 export default {
   register,
   login,
   get,
+  update,
 };

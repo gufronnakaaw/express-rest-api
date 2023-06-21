@@ -1,7 +1,8 @@
 import supertest from 'supertest';
 import { server } from '../utils/server.js';
 import { logger } from '../utils/logging.js';
-import { createTestUser, removeTestUser } from './test.util.js';
+import { createTestUser, getTestUser, removeTestUser } from './test.util.js';
+import bcrypt from 'bcrypt';
 
 describe('POST /api/users', function () {
   afterEach(async () => {
@@ -47,7 +48,7 @@ describe('POST /api/users', function () {
       email: 'test@mail.com',
     });
 
-    logger.info(result.body);
+    // logger.info(result.body);
 
     expect(result.status).toBe(201);
     expect(result.body.data.username).toBe('test');
@@ -66,7 +67,7 @@ describe('POST /api/users', function () {
       email: 'test@mail.com',
     });
 
-    logger.info(result.body);
+    // logger.info(result.body);
 
     expect(result.status).toBe(400);
     expect(result.body.success).toBeFalsy();
@@ -180,6 +181,98 @@ describe('GET /api/users/current', function () {
     const result = await supertest(server)
       .get('/api/users/current')
       .set('Authorization', 'wrongtoken');
+
+    expect(result.status).toBe(401);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.data).toBeNull();
+    expect(result.body.errors).toBeDefined();
+  });
+});
+
+describe('PATCH /api/users/current', function () {
+  beforeEach(async () => {
+    await createTestUser();
+  });
+
+  afterEach(async () => {
+    await removeTestUser();
+  });
+
+  it('should can update user', async () => {
+    const result = await supertest(server)
+      .patch('/api/users/current')
+      .set('Authorization', 'test')
+      .send({
+        password: 'testpassword',
+        email: 'test@gmail.com',
+      });
+
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(result.body.errors).toBeNull();
+    expect(result.body.data.username).toBeDefined();
+    expect(result.body.data.email).toBeDefined();
+
+    const testUser = await getTestUser();
+    expect(await bcrypt.compare('testpassword', testUser.password)).toBe(true);
+  });
+
+  it('should can update user email', async () => {
+    const result = await supertest(server)
+      .patch('/api/users/current')
+      .set('Authorization', 'test')
+      .send({
+        email: 'test@gmail.com',
+      });
+
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(result.body.errors).toBeNull();
+    expect(result.body.data.username).toBeDefined();
+    expect(result.body.data.email).toBeDefined();
+  });
+
+  it('should can update user password', async () => {
+    const result = await supertest(server)
+      .patch('/api/users/current')
+      .set('Authorization', 'test')
+      .send({
+        password: 'testing',
+      });
+
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(result.body.errors).toBeNull();
+    expect(result.body.data.username).toBeDefined();
+    expect(result.body.data.email).toBeDefined();
+
+    const testUser = await getTestUser();
+    expect(await bcrypt.compare('testing', testUser.password)).toBe(true);
+  });
+
+  it('should reject if request is invalid', async () => {
+    const result = await supertest(server)
+      .patch('/api/users/current')
+      .set('Authorization', 'wrongtoken')
+      .send({
+        password: 'testing',
+      });
 
     expect(result.status).toBe(401);
     expect(result.body).toHaveProperty('success');

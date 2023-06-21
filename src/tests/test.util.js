@@ -20,4 +20,12 @@ async function createTestUser() {
   });
 }
 
-export { removeTestUser, createTestUser };
+async function getTestUser() {
+  return prisma.user.findUnique({
+    where: {
+      username: 'test',
+    },
+  });
+}
+
+export { removeTestUser, createTestUser, getTestUser };

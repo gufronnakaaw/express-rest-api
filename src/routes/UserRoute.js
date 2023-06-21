@@ -8,5 +8,6 @@ router.post('/', UserController.register);
 router.post('/login', UserController.login);
 
 router.get('/current', AuthMiddleware, UserController.get);
+router.patch('/current', AuthMiddleware, UserController.update);
 
 export default router;

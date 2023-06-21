@@ -41,8 +41,26 @@ async function get(req, res, next) {
   }
 }
 
+async function update(req, res, next) {
+  try {
+    const username = req.user.username;
+    const request = req.body;
+    request.username = username;
+
+    const result = await UserService.update(request);
+    res.status(200).json({
+      success: true,
+      data: result,
+      errors: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   register,
   login,
   get,
+  update,
 };
