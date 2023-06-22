@@ -4,7 +4,8 @@
   "description": "Learn Express Rest API from Programmer Zaman Now",
   "main": "src/app.js",
   "scripts": {
-    "test": "jest -i"
+    "test": "jest -i",
+    "dev": "node src/app.js"
   },
   "jest": {
     "transform": {
