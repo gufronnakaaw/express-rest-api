@@ -19,14 +19,24 @@ async function AuthMiddleware(req, res, next) {
     });
 
     if (!user) {
-      res
-        .status(401)
-        .json({
-          success: false,
-          data: null,
-          errors: 'Unauthorized',
-        })
-        .end();
+      if (req.method === 'DELETE') {
+        res
+          .status(401)
+          .json({
+            success: false,
+            errors: 'Unauthorized',
+          })
+          .end();
+      } else {
+        res
+          .status(401)
+          .json({
+            success: false,
+            data: null,
+            errors: 'Unauthorized',
+          })
+          .end();
+      }
     } else {
       req.user = user;
       next();

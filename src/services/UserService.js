@@ -2,6 +2,7 @@ import { validate } from '../validation/validate.js';
 import {
   GetUserValidation,
   LoginUserValidation,
+  LogoutUserValidation,
   RegisterUserValidation,
   UpdateUserValidation,
 } from '../validation/user.validation.js';
@@ -127,9 +128,33 @@ async function update(request) {
   });
 }
 
+async function logout(username) {
+  username = validate(LogoutUserValidation, username);
+
+  const count = await prisma.user.count({
+    where: {
+      username,
+    },
+  });
+
+  if (count < 1) {
+    throw new ResponseError(404, 'User not found');
+  }
+
+  return prisma.user.update({
+    where: {
+      username,
+    },
+    data: {
+      token: null,
+    },
+  });
+}
+
 export default {
   register,
   login,
   get,
   update,
+  logout,
 };

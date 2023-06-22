@@ -58,9 +58,22 @@ async function update(req, res, next) {
   }
 }
 
+async function logout(req, res, next) {
+  try {
+    await UserService.logout(req.user.username);
+    res.status(200).json({
+      success: true,
+      errors: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   register,
   login,
   get,
   update,
+  logout,
 };

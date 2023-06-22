@@ -9,5 +9,6 @@ router.post('/login', UserController.login);
 
 router.get('/current', AuthMiddleware, UserController.get);
 router.patch('/current', AuthMiddleware, UserController.update);
+router.delete('/logout', AuthMiddleware, UserController.logout);
 
 export default router;

@@ -284,3 +284,45 @@ describe('PATCH /api/users/current', function () {
     expect(result.body.errors).toBeDefined();
   });
 });
+
+describe('DELETE /api/users/logout', function () {
+  beforeEach(async () => {
+    await createTestUser();
+  });
+
+  afterEach(async () => {
+    await removeTestUser();
+  });
+
+  it('should can logout', async () => {
+    const result = await supertest(server)
+      .delete('/api/users/logout')
+      .set('Authorization', 'test');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).not.toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(result.body.errors).toBeNull();
+  });
+
+  it('should reject logout', async () => {
+    const result = await supertest(server)
+      .delete('/api/users/logout')
+      .set('Authorization', 'wrongtoken');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(401);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).not.toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.errors).toBeDefined();
+  });
+});
