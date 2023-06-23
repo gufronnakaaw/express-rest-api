@@ -5,10 +5,6 @@ export const prisma = new PrismaClient({
   log: [
     {
       emit: 'event',
-      level: 'query',
-    },
-    {
-      emit: 'event',
       level: 'error',
     },
     {
@@ -30,10 +26,9 @@ prisma.$on('warn', (e) => {
   logger.warn(e);
 });
 
-prisma.$on('info', (e) => {
-  logger.info(e);
+prisma.$on('info', ({ message, timestamp }) => {
+  logger.info({
+    message,
+    timestamp,
+  });
 });
-
-// prisma.$on('query', (e) => {
-//   logger.info(e);
-// });
