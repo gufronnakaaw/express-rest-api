@@ -5,6 +5,9 @@
   "main": "src/app.js",
   "scripts": {
     "test": "jest -i",
+    "test:user": "jest -i --testPathPattern='tests/user.test.js'",
+    "test:contact": "jest -i --testPathPattern='tests/contact.test.js'",
+    "test:address": "jest -i --testPathPattern='tests/address.test.js'",
     "dev": "node src/app.js"
   },
   "jest": {
