@@ -7,5 +7,6 @@ const router = express.Router();
 router.post('/', AuthMiddleware, ContactController.create);
 router.get('/:contactId', AuthMiddleware, ContactController.get);
 router.put('/:contactId', AuthMiddleware, ContactController.update);
+router.delete('/:contactId', AuthMiddleware, ContactController.remove);
 
 export default router;

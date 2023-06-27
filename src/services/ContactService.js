@@ -2,6 +2,7 @@ import { validate } from '../validation/validate.js';
 import {
   CreateContactValidation,
   GetContactValidation,
+  RemoveContactValidation,
   UpdateContactValidation,
 } from '../validation/contact.validation.js';
 import { prisma } from '../utils/database.js';
@@ -81,4 +82,25 @@ async function update(user, request) {
   });
 }
 
-export default { create, get, update };
+async function remove(user, contactId) {
+  contactId = await validate(RemoveContactValidation, contactId);
+
+  const totalContact = await prisma.contact.count({
+    where: {
+      id: contactId,
+      username: user.username,
+    },
+  });
+
+  if (totalContact < 1) {
+    throw new ResponseError(404, 'Contact not found');
+  }
+
+  return prisma.contact.delete({
+    where: {
+      id: contactId,
+    },
+  });
+}
+
+export default { create, get, update, remove };

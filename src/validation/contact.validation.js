@@ -17,8 +17,11 @@ const UpdateContactValidation = Joi.object({
   phone: Joi.string().max(20).optional(),
 });
 
+const RemoveContactValidation = Joi.number().positive().required();
+
 export {
   CreateContactValidation,
   GetContactValidation,
   UpdateContactValidation,
+  RemoveContactValidation,
 };

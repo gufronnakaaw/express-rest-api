@@ -275,3 +275,81 @@ describe('PUT /api/contacts/:contactId', function () {
     expect(result.body.errors).toBeDefined();
   });
 });
+
+describe('DELETE /api/contacts/:contactId', function () {
+  beforeEach(async () => {
+    await createTestUser();
+    await createTestContact();
+  });
+
+  afterEach(async () => {
+    await removeAllTestContact();
+    await removeTestUser();
+  });
+
+  it('should can remove contact', async () => {
+    let contact = await getTestContact();
+    const result = await supertest(server)
+      .delete(`/api/contacts/${contact.id}`)
+      .set('Authorization', 'test');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(result.body.errors).toBeNull();
+
+    contact = await getTestContact();
+    expect(contact).toBeNull();
+  });
+
+  it('should reject remove if contactId is invalid', async () => {
+    const result = await supertest(server)
+      .delete(`/api/contacts/ajksdhkjash`)
+      .set('Authorization', 'test');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(400);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.errors).toBeDefined();
+  });
+
+  it('should reject remove if token is invalid', async () => {
+    const contact = await getTestContact();
+
+    const result = await supertest(server)
+      .delete(`/api/contacts/${contact.id}`)
+      .set('Authorization', 'wrongtoken');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(401);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.errors).toBeDefined();
+  });
+
+  it('should not found', async () => {
+    const result = await supertest(server)
+      .delete(`/api/contacts/5565656`)
+      .set('Authorization', 'test');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(404);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.errors).toBeDefined();
+  });
+});

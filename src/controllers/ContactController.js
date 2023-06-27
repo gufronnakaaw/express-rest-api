@@ -41,4 +41,16 @@ async function update(req, res, next) {
   }
 }
 
-export default { create, get, update };
+async function remove(req, res, next) {
+  try {
+    await ContactService.remove(req.user, req.params.contactId);
+    res.status(200).json({
+      success: true,
+      errors: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export default { create, get, update, remove };
