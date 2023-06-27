@@ -14,4 +14,17 @@ async function create(req, res, next) {
   }
 }
 
-export default { create };
+async function get(req, res, next) {
+  try {
+    const result = await ContactService.get(req.user, req.params.contactId);
+    res.status(200).json({
+      success: true,
+      data: result,
+      errors: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export default { create, get };

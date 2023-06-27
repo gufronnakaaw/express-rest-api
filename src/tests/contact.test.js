@@ -2,7 +2,9 @@ import supertest from 'supertest';
 import { server } from '../utils/server.js';
 import { logger } from '../utils/logging.js';
 import {
+  createTestContact,
   createTestUser,
+  getTestContact,
   removeAllTestContact,
   removeTestUser,
 } from './test.util.js';
@@ -54,9 +56,80 @@ describe('POST /api/contacts', function () {
         phone: '08123434565asdasdkjhask6',
       });
 
-    logger.info(result.body);
+    // logger.info(result.body);
 
     expect(result.status).toBe(400);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.data).toBeNull();
+    expect(result.body.errors).toBeDefined();
+  });
+});
+
+describe('GET /api/contacts/:contactId', function () {
+  beforeEach(async () => {
+    await createTestUser();
+    await createTestContact();
+  });
+
+  afterEach(async () => {
+    await removeAllTestContact();
+    await removeTestUser();
+  });
+
+  it('should can get contact', async () => {
+    const testContact = await getTestContact();
+
+    const result = await supertest(server)
+      .get(`/api/contacts/${testContact.id}`)
+      .set('Authorization', 'test');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(result.body.data.id).toBeDefined();
+    expect(result.body.data.firstname).toBe(testContact.firstname);
+    expect(result.body.data.lastname).toBe(testContact.lastname);
+    expect(result.body.data.email).toBe(testContact.email);
+    expect(result.body.data.phone).toBe(testContact.phone);
+    expect(result.body.errors).toBeNull();
+  });
+
+  it('should reject get contact', async () => {
+    const testContact = await getTestContact();
+
+    const result = await supertest(server)
+      .get(`/api/contacts/${testContact.id}`)
+      .set('Authorization', 'wrongtoken');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(401);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.data).toBeNull();
+    expect(result.body.errors).toBeDefined();
+  });
+
+  it('should not found', async () => {
+    const result = await supertest(server)
+      .get(`/api/contacts/215546698785152`)
+      .set('Authorization', 'test');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(404);
     expect(result.body).toHaveProperty('success');
     expect(result.body).toHaveProperty('data');
     expect(result.body).toHaveProperty('errors');

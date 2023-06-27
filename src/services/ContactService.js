@@ -1,6 +1,10 @@
 import { validate } from '../validation/validate.js';
-import { CreateContactValidation } from '../validation/contact.validation.js';
+import {
+  CreateContactValidation,
+  GetContactValidation,
+} from '../validation/contact.validation.js';
 import { prisma } from '../utils/database.js';
+import { ResponseError } from '../error/ResponseError.js';
 
 async function create(user, request) {
   const contact = validate(CreateContactValidation, request);
@@ -18,4 +22,28 @@ async function create(user, request) {
   });
 }
 
-export default { create };
+async function get(user, contactId) {
+  contactId = validate(GetContactValidation, contactId);
+
+  const contact = await prisma.contact.findFirst({
+    where: {
+      username: user.username,
+      id: contactId,
+    },
+    select: {
+      id: true,
+      firstname: true,
+      lastname: true,
+      email: true,
+      phone: true,
+    },
+  });
+
+  if (!contact) {
+    throw new ResponseError(404, 'Contact not found');
+  }
+
+  return contact;
+}
+
+export default { create, get };
