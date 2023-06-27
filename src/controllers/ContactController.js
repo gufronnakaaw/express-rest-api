@@ -27,4 +27,18 @@ async function get(req, res, next) {
   }
 }
 
-export default { create, get };
+async function update(req, res, next) {
+  try {
+    req.body.id = req.params.contactId;
+    const result = await ContactService.update(req.user, req.body);
+    res.status(200).json({
+      success: true,
+      data: result,
+      errors: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export default { create, get, update };
