@@ -2,6 +2,7 @@ import supertest from 'supertest';
 import { server } from '../utils/server.js';
 import { logger } from '../utils/logging.js';
 import {
+  createManyTestContacts,
   createTestContact,
   createTestUser,
   getTestContact,
@@ -350,6 +351,263 @@ describe('DELETE /api/contacts/:contactId', function () {
     expect(result.body).toHaveProperty('errors');
 
     expect(result.body.success).toBeFalsy();
+    expect(result.body.errors).toBeDefined();
+  });
+});
+
+describe('GET /api/contacts', function () {
+  beforeEach(async () => {
+    await createTestUser();
+    await createManyTestContacts();
+  });
+
+  afterEach(async () => {
+    await removeAllTestContact();
+    await removeTestUser();
+  });
+
+  it('should can search contact without params', async () => {
+    const result = await supertest(server)
+      .get('/api/contacts')
+      .set('Authorization', 'test');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(result.body.data.length).toBe(10);
+    expect(result.body.page).toBe(1);
+    expect(result.body.total_page).toBe(2);
+    expect(result.body.total_item).toBe(15);
+    expect(result.body.errors).toBeNull();
+  });
+
+  it('should can search contact to page 2', async () => {
+    const result = await supertest(server)
+      .get('/api/contacts')
+      .query({
+        page: 2,
+      })
+      .set('Authorization', 'test');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(result.body.data.length).toBe(5);
+    expect(result.body.page).toBe(2);
+    expect(result.body.total_page).toBe(2);
+    expect(result.body.total_item).toBe(15);
+    expect(result.body.errors).toBeNull();
+  });
+
+  it('should can search contact using name', async () => {
+    const result = await supertest(server)
+      .get('/api/contacts')
+      .query({
+        name: 'test 1',
+      })
+      .set('Authorization', 'test');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(result.body.data.length).toBe(7);
+    expect(result.body.page).toBe(1);
+    expect(result.body.total_page).toBe(1);
+    expect(result.body.total_item).toBe(7);
+    expect(result.body.errors).toBeNull();
+  });
+
+  it('should can search contact using email', async () => {
+    const result = await supertest(server)
+      .get('/api/contacts')
+      .query({
+        email: 'test1',
+      })
+      .set('Authorization', 'test');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(result.body.data.length).toBe(7);
+    expect(result.body.page).toBe(1);
+    expect(result.body.total_page).toBe(1);
+    expect(result.body.total_item).toBe(7);
+    expect(result.body.errors).toBeNull();
+  });
+
+  it('should can search contact using phone', async () => {
+    const result = await supertest(server)
+      .get('/api/contacts')
+      .query({
+        phone: '081234345651',
+      })
+      .set('Authorization', 'test');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(result.body.data.length).toBe(7);
+    expect(result.body.page).toBe(1);
+    expect(result.body.total_page).toBe(1);
+    expect(result.body.total_item).toBe(7);
+    expect(result.body.errors).toBeNull();
+  });
+
+  it('should get one data using name', async () => {
+    const result = await supertest(server)
+      .get('/api/contacts')
+      .query({
+        name: 'test 15',
+      })
+      .set('Authorization', 'test');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(result.body.data.length).toBe(1);
+    expect(result.body.page).toBe(1);
+    expect(result.body.total_page).toBe(1);
+    expect(result.body.total_item).toBe(1);
+    expect(result.body.errors).toBeNull();
+  });
+
+  it('should get one data using email', async () => {
+    const result = await supertest(server)
+      .get('/api/contacts')
+      .query({
+        email: 'test1@mail.com',
+      })
+      .set('Authorization', 'test');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(result.body.data.length).toBe(1);
+    expect(result.body.page).toBe(1);
+    expect(result.body.total_page).toBe(1);
+    expect(result.body.total_item).toBe(1);
+    expect(result.body.errors).toBeNull();
+  });
+
+  it('should get one data using phone', async () => {
+    const result = await supertest(server)
+      .get('/api/contacts')
+      .query({
+        phone: '0812343456510',
+      })
+      .set('Authorization', 'test');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(result.body.data.length).toBe(1);
+    expect(result.body.page).toBe(1);
+    expect(result.body.total_page).toBe(1);
+    expect(result.body.total_item).toBe(1);
+    expect(result.body.errors).toBeNull();
+  });
+
+  it('should not found', async () => {
+    const result = await supertest(server)
+      .get('/api/contacts')
+      .query({
+        phone: '081234345651000',
+      })
+      .set('Authorization', 'test');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(200);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(result.body.data.length).toBe(0);
+    expect(result.body.page).toBe(1);
+    expect(result.body.total_page).toBe(0);
+    expect(result.body.total_item).toBe(0);
+    expect(result.body.errors).toBeNull();
+  });
+
+  it('should reject if token is invalid', async () => {
+    const result = await supertest(server)
+      .get('/api/contacts')
+      .query({
+        phone: '081234345651',
+      })
+      .set('Authorization', 'wrong token');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(401);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.data).toBeNull();
+    expect(result.body.errors).toBeDefined();
+  });
+
+  it('should reject if request is invalid', async () => {
+    const result = await supertest(server)
+      .get('/api/contacts')
+      .query({
+        email: 'test@mail.com.error.wrong',
+        size: 1000,
+      })
+      .set('Authorization', 'test');
+
+    // logger.info(result.body);
+
+    expect(result.status).toBe(400);
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.data).toBeNull();
     expect(result.body.errors).toBeDefined();
   });
 });

@@ -8,5 +8,6 @@ router.post('/', AuthMiddleware, ContactController.create);
 router.get('/:contactId', AuthMiddleware, ContactController.get);
 router.put('/:contactId', AuthMiddleware, ContactController.update);
 router.delete('/:contactId', AuthMiddleware, ContactController.remove);
+router.get('/', AuthMiddleware, ContactController.search);
 
 export default router;
