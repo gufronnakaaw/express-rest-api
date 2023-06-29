@@ -1,6 +1,7 @@
 import express from 'express';
 import ContactController from '../controllers/ContactController.js';
 import { AuthMiddleware } from '../middleware/AuthMiddleware.js';
+import AddressController from '../controllers/AddressController.js';
 
 const router = express.Router();
 
@@ -9,5 +10,5 @@ router.get('/:contactId', AuthMiddleware, ContactController.get);
 router.put('/:contactId', AuthMiddleware, ContactController.update);
 router.delete('/:contactId', AuthMiddleware, ContactController.remove);
 router.get('/', AuthMiddleware, ContactController.search);
-
+router.post('/:contactId/addresses', AuthMiddleware, AddressController.create);
 export default router;
