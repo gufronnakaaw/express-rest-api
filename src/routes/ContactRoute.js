@@ -11,4 +11,10 @@ router.put('/:contactId', AuthMiddleware, ContactController.update);
 router.delete('/:contactId', AuthMiddleware, ContactController.remove);
 router.get('/', AuthMiddleware, ContactController.search);
 router.post('/:contactId/addresses', AuthMiddleware, AddressController.create);
+router.get(
+  '/:contactId/addresses/:addressesId',
+  AuthMiddleware,
+  AddressController.get
+);
+
 export default router;

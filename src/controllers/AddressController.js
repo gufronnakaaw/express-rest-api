@@ -17,6 +17,25 @@ async function create(req, res, next) {
   }
 }
 
+async function get(req, res, next) {
+  try {
+    const data = await AddressService.get(
+      req.user,
+      req.params.contactId,
+      req.params.addressesId
+    );
+
+    res.status(200).json({
+      success: true,
+      data,
+      errors: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   create,
+  get,
 };
