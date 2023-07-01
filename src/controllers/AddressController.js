@@ -53,8 +53,25 @@ async function update(req, res, next) {
   }
 }
 
+async function remove(req, res, next) {
+  try {
+    await AddressService.remove(
+      req.user,
+      req.params.contactId,
+      req.params.addressesId
+    );
+    res.status(200).json({
+      success: true,
+      errors: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   create,
   get,
   update,
+  remove,
 };

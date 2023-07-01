@@ -21,5 +21,10 @@ router.put(
   AuthMiddleware,
   AddressController.update
 );
+router.delete(
+  '/:contactId/addresses/:addressesId',
+  AuthMiddleware,
+  AddressController.remove
+);
 
 export default router;

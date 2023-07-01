@@ -491,3 +491,112 @@ describe('PUT /api/contacts/:contactId/addresses/:addressesId', function () {
     expect(result.body.errors).toBeDefined();
   });
 });
+
+describe('DELETE /api/contacts/:contactId/addresses/:addressesId', function () {
+  beforeEach(async () => {
+    await createTestUser();
+    await createTestContact();
+    await createTestAddresses();
+  });
+
+  afterEach(async () => {
+    await removeAllTestAddresses();
+    await removeAllTestContact();
+    await removeTestUser();
+  });
+
+  it('should can delete address', async () => {
+    const contact = await getTestContact();
+    const address = await getTestAddresses();
+
+    const result = await supertest(server)
+      .delete(`/api/contacts/${contact.id}/addresses/${address.id}`)
+      .set('Authorization', 'test');
+
+    logger.info(result.body);
+
+    expect(result.status).toBe(200);
+
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(result.body.errors).toBeNull();
+  });
+
+  it('should reject delete address if contactId not found', async () => {
+    const contact = await getTestContact();
+    const address = await getTestAddresses();
+
+    const result = await supertest(server)
+      .delete(`/api/contacts/${contact.id + 1}/addresses/${address.id}`)
+      .set('Authorization', 'test');
+
+    logger.info(result.body);
+
+    expect(result.status).toBe(404);
+
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.errors).toBeDefined();
+  });
+
+  it('should reject delete address if addressesId not found', async () => {
+    const contact = await getTestContact();
+    const address = await getTestAddresses();
+
+    const result = await supertest(server)
+      .delete(`/api/contacts/${contact.id}/addresses/${address.id + 1}`)
+      .set('Authorization', 'test');
+
+    logger.info(result.body);
+
+    expect(result.status).toBe(404);
+
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.errors).toBeDefined();
+  });
+
+  it('should reject delete address if token is invalid', async () => {
+    const contact = await getTestContact();
+    const address = await getTestAddresses();
+
+    const result = await supertest(server)
+      .delete(`/api/contacts/${contact.id}/addresses/${address.id}`)
+      .set('Authorization', 'wrong token');
+
+    logger.info(result.body);
+
+    expect(result.status).toBe(401);
+
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.errors).toBeDefined();
+  });
+
+  it('should reject delete address if request is invalid', async () => {
+    // const contact = await getTestContact();
+    // const address = await getTestAddresses();
+
+    const result = await supertest(server)
+      .delete(`/api/contacts/asdhja/addresses/asas455`)
+      .set('Authorization', 'test');
+
+    logger.info(result.body);
+
+    expect(result.status).toBe(400);
+
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.errors).toBeDefined();
+  });
+});
