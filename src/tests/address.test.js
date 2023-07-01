@@ -3,6 +3,7 @@ import { server } from '../utils/server.js';
 import { logger } from '../utils/logging.js';
 
 import {
+  createManyTestAddresses,
   createTestAddresses,
   createTestContact,
   createTestUser,
@@ -597,6 +598,80 @@ describe('DELETE /api/contacts/:contactId/addresses/:addressesId', function () {
     expect(result.body).toHaveProperty('errors');
 
     expect(result.body.success).toBeFalsy();
+    expect(result.body.errors).toBeDefined();
+  });
+});
+
+describe('GET /api/contacts/:contactId/addresses', function () {
+  beforeEach(async () => {
+    await createTestUser();
+    await createTestContact();
+    await createManyTestAddresses();
+  });
+
+  afterEach(async () => {
+    await removeAllTestAddresses();
+    await removeAllTestContact();
+    await removeTestUser();
+  });
+
+  it('should can get list address', async () => {
+    const contact = await getTestContact();
+
+    const result = await supertest(server)
+      .get(`/api/contacts/${contact.id}/addresses`)
+      .set('Authorization', 'test');
+
+    logger.info(result.body);
+
+    expect(result.status).toBe(200);
+
+    expect(result.body).toHaveProperty('errors');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(Array.isArray(result.body.data)).toBeTruthy();
+    expect(result.body.errors).toBeNull();
+  });
+
+  it('should cannot get list address if contact not found', async () => {
+    const contact = await getTestContact();
+
+    const result = await supertest(server)
+      .get(`/api/contacts/${contact.id + 1}/addresses`)
+      .set('Authorization', 'test');
+
+    logger.info(result.body);
+
+    expect(result.status).toBe(404);
+
+    expect(result.body).toHaveProperty('errors');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.data).toBeNull();
+    expect(result.body.errors).toBeDefined();
+  });
+
+  it('should cannot get list address if token is invalid', async () => {
+    const contact = await getTestContact();
+
+    const result = await supertest(server)
+      .get(`/api/contacts/${contact.id}/addresses`)
+      .set('Authorization', 'wrong token');
+
+    logger.info(result.body);
+
+    expect(result.status).toBe(401);
+
+    expect(result.body).toHaveProperty('errors');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.data).toBeNull();
     expect(result.body.errors).toBeDefined();
   });
 });

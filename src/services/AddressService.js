@@ -147,9 +147,39 @@ async function remove(user, contactId, addressId) {
   });
 }
 
+async function list(user, contactId) {
+  contactId = validate(GetAddressValidation, contactId);
+
+  const totalContact = await prisma.contact.count({
+    where: {
+      username: user.username,
+      id: contactId,
+    },
+  });
+
+  if (totalContact < 1) {
+    throw new ResponseError(404, 'Contact not found');
+  }
+
+  return prisma.address.findMany({
+    where: {
+      contact_id: contactId,
+    },
+    select: {
+      id: true,
+      street: true,
+      city: true,
+      province: true,
+      country: true,
+      postal_code: true,
+    },
+  });
+}
+
 export default {
   create,
   get,
   update,
   remove,
+  list,
 };

@@ -69,9 +69,23 @@ async function remove(req, res, next) {
   }
 }
 
+async function list(req, res, next) {
+  try {
+    const data = await AddressService.list(req.user, req.params.contactId);
+    res.status(200).json({
+      success: true,
+      data,
+      errors: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   create,
   get,
   update,
   remove,
+  list,
 };
