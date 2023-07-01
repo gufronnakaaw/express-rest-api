@@ -35,7 +35,26 @@ async function get(req, res, next) {
   }
 }
 
+async function update(req, res, next) {
+  try {
+    req.body.id = req.params.addressesId;
+    const data = await AddressService.update(
+      req.user,
+      req.params.contactId,
+      req.body
+    );
+    res.status(200).json({
+      success: true,
+      data,
+      errors: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   create,
   get,
+  update,
 };

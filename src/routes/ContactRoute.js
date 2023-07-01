@@ -16,5 +16,10 @@ router.get(
   AuthMiddleware,
   AddressController.get
 );
+router.put(
+  '/:contactId/addresses/:addressesId',
+  AuthMiddleware,
+  AddressController.update
+);
 
 export default router;

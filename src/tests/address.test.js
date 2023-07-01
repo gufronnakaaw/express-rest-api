@@ -321,3 +321,173 @@ describe('GET /api/contacts/:contactId/addresses/:addressesId', function () {
     expect(result.body.errors).toBeDefined();
   });
 });
+
+describe('PUT /api/contacts/:contactId/addresses/:addressesId', function () {
+  beforeEach(async () => {
+    await createTestUser();
+    await createTestContact();
+    await createTestAddresses();
+  });
+
+  afterEach(async () => {
+    await removeAllTestAddresses();
+    await removeAllTestContact();
+    await removeTestUser();
+  });
+
+  it('should can update address', async () => {
+    const contact = await getTestContact();
+    const address = await getTestAddresses();
+
+    const update = {
+      street: 'street update',
+      city: 'city update',
+      province: 'province update',
+      country: 'country update',
+      postal_code: '123456',
+    };
+
+    const result = await supertest(server)
+      .put(`/api/contacts/${contact.id}/addresses/${address.id}`)
+      .set('Authorization', 'test')
+      .send(update);
+
+    // logger.info(address);
+    // logger.info(result.body);
+
+    expect(result.status).toBe(200);
+
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeTruthy();
+    expect(result.body.data.id).toBe(address.id);
+    expect(result.body.data.street).toBe(update.street);
+    expect(result.body.data.city).toBe(update.city);
+    expect(result.body.data.province).toBe(update.province);
+    expect(result.body.data.country).toBe(update.country);
+    expect(result.body.data.postal_code).toBe(update.postal_code);
+    expect(result.body.errors).toBeNull();
+  });
+
+  it('should reject update address if contactId not found', async () => {
+    // const contact = await getTestContact();
+    const address = await getTestAddresses();
+
+    const update = {
+      street: 'street update',
+      city: 'city update',
+      province: 'province update',
+      country: 'country update',
+      postal_code: '123456',
+    };
+
+    const result = await supertest(server)
+      .put(`/api/contacts/3423233543/addresses/${address.id}`)
+      .set('Authorization', 'test')
+      .send(update);
+
+    logger.info(result.body);
+
+    expect(result.status).toBe(404);
+
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.data).toBeNull();
+    expect(result.body.errors).toBeDefined();
+  });
+
+  it('should reject update address if addressesId not found', async () => {
+    const contact = await getTestContact();
+    const address = await getTestAddresses();
+
+    const update = {
+      street: 'street update',
+      city: 'city update',
+      province: 'province update',
+      country: 'country update',
+      postal_code: '123456',
+    };
+
+    const result = await supertest(server)
+      .put(`/api/contacts/${contact.id}/addresses/24234453`)
+      .set('Authorization', 'test')
+      .send(update);
+
+    logger.info(result.body);
+
+    expect(result.status).toBe(404);
+
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.data).toBeNull();
+    expect(result.body.errors).toBeDefined();
+  });
+
+  it('should reject update address if request is invalid', async () => {
+    const contact = await getTestContact();
+    const address = await getTestAddresses();
+
+    const update = {
+      street: 'street update',
+      city: 'city update',
+      province: 'province update',
+      country: '',
+      postal_code: '',
+    };
+
+    const result = await supertest(server)
+      .put(`/api/contacts/${contact.id}/addresses/${address.id}`)
+      .set('Authorization', 'test')
+      .send(update);
+
+    logger.info(result.body);
+
+    expect(result.status).toBe(400);
+
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.data).toBeNull();
+    expect(result.body.errors).toBeDefined();
+  });
+
+  it('should reject update address if token is invalid', async () => {
+    const contact = await getTestContact();
+    const address = await getTestAddresses();
+
+    const update = {
+      street: 'street update',
+      city: 'city update',
+      province: 'province update',
+      country: 'country update',
+      postal_code: '123456',
+    };
+
+    const result = await supertest(server)
+      .put(`/api/contacts/${contact.id}/addresses/${address.id}`)
+      .set('Authorization', 'wrongtoken')
+      .send(update);
+
+    logger.info(result.body);
+
+    expect(result.status).toBe(401);
+
+    expect(result.body).toHaveProperty('success');
+    expect(result.body).toHaveProperty('data');
+    expect(result.body).toHaveProperty('errors');
+
+    expect(result.body.success).toBeFalsy();
+    expect(result.body.data).toBeNull();
+    expect(result.body.errors).toBeDefined();
+  });
+});
