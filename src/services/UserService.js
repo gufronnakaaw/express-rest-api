@@ -1,4 +1,4 @@
-import { validate } from '../validation/validate.js';
+import validate from '../validation/validate.js';
 import {
   GetUserValidation,
   LoginUserValidation,
@@ -6,8 +6,8 @@ import {
   RegisterUserValidation,
   UpdateUserValidation,
 } from '../validation/user.validation.js';
-import { prisma } from '../utils/database.js';
-import { ResponseError } from '../error/ResponseError.js';
+import prisma from '../utils/database.js';
+import ResponseError from '../error/ResponseError.js';
 import bcrypt from 'bcrypt';
 import { v4 as uuid } from 'uuid';
 
@@ -102,7 +102,7 @@ async function update(request) {
     },
   });
 
-  if (totalUser != 1) {
+  if (totalUser < 1) {
     throw new ResponseError(404, 'User not found');
   }
 

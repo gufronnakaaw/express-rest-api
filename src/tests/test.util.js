@@ -1,4 +1,4 @@
-import { prisma } from '../utils/database';
+import prisma from '../utils/database.js';
 import bcrypt from 'bcrypt';
 
 async function removeTestUser() {

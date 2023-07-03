@@ -1,5 +1,5 @@
-import { server } from './utils/server.js';
-import { logger } from './utils/logging.js';
+import server from './utils/server.js';
+import logger from './utils/logging.js';
 
 const PORT = 3000;
 

@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
-import { logger } from './logging.js';
+import logger from './logging.js';
 
-export const prisma = new PrismaClient({
+const prisma = new PrismaClient({
   log: [
     {
       emit: 'event',
@@ -32,3 +32,5 @@ prisma.$on('info', ({ message, timestamp }) => {
     timestamp,
   });
 });
+
+export default prisma;

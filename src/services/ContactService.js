@@ -1,4 +1,4 @@
-import { validate } from '../validation/validate.js';
+import validate from '../validation/validate.js';
 import {
   CreateContactValidation,
   GetContactValidation,
@@ -6,8 +6,8 @@ import {
   SearchContactValidation,
   UpdateContactValidation,
 } from '../validation/contact.validation.js';
-import { prisma } from '../utils/database.js';
-import { ResponseError } from '../error/ResponseError.js';
+import prisma from '../utils/database.js';
+import ResponseError from '../error/ResponseError.js';
 
 async function create(user, request) {
   const contact = validate(CreateContactValidation, request);

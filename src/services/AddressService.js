@@ -1,12 +1,12 @@
-import { ResponseError } from '../error/ResponseError.js';
-import { prisma } from '../utils/database.js';
+import ResponseError from '../error/ResponseError.js';
+import prisma from '../utils/database.js';
 import {
   CreateAddressValidation,
   GetAddressValidation,
   UpdateAddressValidation,
 } from '../validation/address.validation.js';
 import { GetContactValidation } from '../validation/contact.validation.js';
-import { validate } from '../validation/validate.js';
+import validate from '../validation/validate.js';
 
 async function create(user, contactId, request) {
   contactId = validate(GetContactValidation, contactId);

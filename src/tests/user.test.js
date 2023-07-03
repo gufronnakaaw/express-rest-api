@@ -1,6 +1,6 @@
 import supertest from 'supertest';
-import { server } from '../utils/server.js';
-import { logger } from '../utils/logging.js';
+import server from '../utils/server.js';
+import logger from '../utils/logging.js';
 import { createTestUser, getTestUser, removeTestUser } from './test.util.js';
 import bcrypt from 'bcrypt';
 

@@ -2,10 +2,10 @@ import UserService from '../services/UserService.js';
 
 async function register(req, res, next) {
   try {
-    const result = await UserService.register(req.body);
+    const data = await UserService.register(req.body);
     res.status(201).json({
       success: true,
-      data: result,
+      data,
       errors: null,
     });
   } catch (error) {
@@ -15,10 +15,10 @@ async function register(req, res, next) {
 
 async function login(req, res, next) {
   try {
-    const result = await UserService.login(req.body);
+    const data = await UserService.login(req.body);
     res.status(200).json({
       success: true,
-      data: result,
+      data,
       errors: null,
     });
   } catch (error) {
@@ -28,12 +28,11 @@ async function login(req, res, next) {
 
 async function get(req, res, next) {
   try {
-    const username = req.user.username;
-    const user = await UserService.get(username);
+    const data = await UserService.get(req.user.username);
 
     res.status(200).json({
       success: true,
-      data: user,
+      data,
       errors: null,
     });
   } catch (error) {
@@ -43,14 +42,12 @@ async function get(req, res, next) {
 
 async function update(req, res, next) {
   try {
-    const username = req.user.username;
-    const request = req.body;
-    request.username = username;
+    req.body.username = req.user.username;
 
-    const result = await UserService.update(request);
+    const data = await UserService.update(req.body);
     res.status(200).json({
       success: true,
-      data: result,
+      data,
       errors: null,
     });
   } catch (error) {

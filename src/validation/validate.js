@@ -1,4 +1,4 @@
-import { ResponseError } from '../error/ResponseError.js';
+import ResponseError from '../error/ResponseError.js';
 
 function validate(schema, request) {
   const result = schema.validate(request, {
@@ -13,4 +13,4 @@ function validate(schema, request) {
   }
 }
 
-export { validate };
+export default validate;
