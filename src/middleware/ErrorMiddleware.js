@@ -9,14 +9,14 @@ function ErrorMiddleware(err, req, res, next) {
     if (req.method == 'DELETE') {
       return res.status(err.status).json({
         success: false,
-        errors: err.message,
+        errors: JSON.parse(err.message),
       });
     }
 
     return res.status(err.status).json({
       success: false,
       data: null,
-      errors: err.message,
+      errors: JSON.parse(err.message),
     });
   }
 
